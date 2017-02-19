@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es5",
+    "sourceMap": true,
+    "noImplicitAny": false,
+    "mapRoot": "",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "lib": [
+      "es2015",
+      "dom"
+    ],
+    "outDir": "lib",
+    "skipLibCheck": true,
+    "rootDir": ".",
+    "typeRoots": [ "./node_modules/@types" ],
+    "types": [
+      "node"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "AppConfig": ["app/config/app-dev.config"]
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "app/main.aot.ts"
+  ],
+  "angularCompilerOptions": {
+    "genDir": "./app/ngfactory",
+    "skipMetadataEmit" : true
+  }
+}
