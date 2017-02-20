@@ -79,7 +79,10 @@ module.exports = function(env) {
     plugins: [
       new ngToolsWebpack.AotPlugin({
         tsConfigPath: './tsconfig.aot.json',
-        entryModule: __dirname + '/app/app.module#AppModule'
+        entryModule: __dirname + '/app/app.module#AppModule',
+        locale: 'fr',
+        i18nFile: './app/locale/messages.fr.xlf',
+        i18nFormat: 'xlf'
       }),
       new extractTextPlugin({
         filename: '[name].css'

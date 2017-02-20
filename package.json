@@ -4,9 +4,13 @@
   "description": "AoT built angular app",
   "main": "src/app/main.ts",
   "scripts": {
-    "start": "webpack-dev-server --config webpack.aot.config.js --env.prod --inline --progress --port 8080",
-    "start_dev": "webpack-dev-server --config webpack.jit.config.js --env.dev --inline --progress --port 8080",
-    "build": "rimraf dist && webpack --config webpack.aot.config.js --env.prod --progress --profile --bail"
+    "start": "webpack-dev-server --config webpack.jit.config.js --env.dev --inline --progress --port 8080",
+    "start_aot": "webpack-dev-server --config webpack.aot.config.js --inline --progress --port 8080",
+    "start_jit": "webpack-dev-server --config webpack.jit.config.js  --inline --progress --port 8080",
+    "build": "rimraf dist && webpack --config webpack.aot.config.js --env.prod --progress --bail",
+    "build-aot": "rimraf dist && webpack --config webpack.aot.config.js --progress --bail",
+    "build-jit": "rimraf dist && webpack --config webpack.aot.config.js --progress --bail",
+    "i18n": "ng-xi18n -p tsconfig.i18n.json && shx mv ./app/ngfactory/messages.xlf ./app/locale/messages.xlf && rimraf temp && rimraf app/ngfactory"
   },
   "author": "Emmanuel Antaya",
   "license": "ISC",
@@ -42,6 +46,7 @@
     "postcss-loader": "^1.3.1",
     "raw-loader": "^0.5.1",
     "rimraf": "^2.5.4",
+    "shx": "^0.2.2",
     "style-loader": "^0.13.1",
     "ts-loader": "^2.0.0",
     "tslint": "^4.4.2",
