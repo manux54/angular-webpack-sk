@@ -1,8 +1,11 @@
+const ngToolsWebpack = require('@ngtools/webpack');
 const webpack = require('webpack');
 const path = require('path');
 const extractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = function(env) {
+  env = env || {};
+
   return {
     resolve: {
       extensions: ['.ts', '.js'],
@@ -11,7 +14,7 @@ module.exports = function(env) {
       },
     },
     entry: {
-      app: './app/main.jit.ts',
+      app: env.aot ? './app/main.aot.ts' : './app/main.jit.ts',
       vendor: [
         'bootstrap',
         'bootstrap/dist/css/bootstrap.css',
@@ -40,14 +43,8 @@ module.exports = function(env) {
         },
         {
           test: /\.ts$/,
-          exclude: /\.aot.ts$/,
-          use: [
-            {
-              loader: 'ts-loader',
-              options: {
-                configFileName: "tsconfig.jit.json"
-              }
-            },
+          use: env.aot ? [ '@ngtools/webpack' ] : [
+            'ts-loader',
             'angular2-template-loader',
             'angular-router-loader'
           ],
@@ -85,13 +82,6 @@ module.exports = function(env) {
       ]
     },
     plugins: [
-      // Workaround for angular/angular#11580
-      new webpack.ContextReplacementPlugin(
-        // The (\\|\/) piece accounts for path separators in *nix and Windows
-        /angular(\\|\/)core(\\|\/)(esm(\\|\/)src|src)(\\|\/)linker/,
-        path.resolve(__dirname, "app"),
-        {}
-      ),
       new extractTextPlugin({
         filename: '[name].css'
       }),
@@ -112,7 +102,23 @@ module.exports = function(env) {
         },
         sourceMap: false
       })
-    ],
+    ].concat(env.aot ? [
+      new ngToolsWebpack.AotPlugin({
+        tsConfigPath: './tsconfig.json',
+        entryModule: __dirname + '/app/app.module#AppModule',
+        locale: 'fr',
+        i18nFile: './app/locale/messages.fr.xlf',
+        i18nFormat: 'xlf'
+      })
+    ] : [
+      // Workaround for angular/angular#11580
+      new webpack.ContextReplacementPlugin(
+        // The (\\|\/) piece accounts for path separators in *nix and Windows
+        /angular(\\|\/)core(\\|\/)(esm(\\|\/)src|src)(\\|\/)linker/,
+        path.resolve(__dirname, "app"),
+        {}
+      )
+    ]),
     devServer: {
       historyApiFallback: true
     }
