@@ -2,34 +2,32 @@ const ngToolsWebpack = require('@ngtools/webpack');
 const webpack = require('webpack');
 const path = require('path');
 const extractTextPlugin = require('extract-text-webpack-plugin');
+const copyPlugin = require('copy-webpack-plugin');
 
 module.exports = function(env) {
   env = env || {};
+
+  env.locale = env.locale || "en";
+  let i18nProviders = path.resolve(__dirname, `app/locale/i18n-providers.${env.locale}`);
 
   return {
     resolve: {
       extensions: ['.ts', '.js'],
       alias: {
         AppConfig: env.prod ? path.resolve(__dirname, "app/config/app-prod.config") : path.resolve(__dirname, "app/config/app-dev.config"),
+        "i18n-providers": i18nProviders,
       },
     },
     entry: {
       app: env.aot ? './app/main.aot.ts' : './app/main.jit.ts',
-      vendor: [
-        'bootstrap',
-        'bootstrap/dist/css/bootstrap.css',
-        'core-js/es7/reflect',
-        'font-awesome/css/font-awesome.css',
-        'jquery',
-        'zone.js',
-      ]
     },
     output: {
       path: path.resolve(__dirname, 'dist'),
       publicPath: 'dist/',
       library: '[name]_[hash]',
-      filename: '[name].js'
+      filename: `[name].${env.locale}.js`
     },
+    devtool: "inline-source-map",
     module: {
       loaders: [
         {
@@ -54,6 +52,10 @@ module.exports = function(env) {
           loader: 'raw-loader'
         },
         {
+          test: /\.xlf$/,
+          loader: 'raw-loader'
+        },
+        {
           test: /\.less$/,
           include: /app/,
           use: [
@@ -64,12 +66,15 @@ module.exports = function(env) {
         },
         {
           test: /\.css$/,
-          include: /app/,
-          loader: 'raw-loader'
+          exclude: /(styles|prebuilt)/,
+          use: [
+            'to-string-loader',
+            'css-loader'
+          ]
         },
         {
-          test: /\.css(\?|$)/,
-          exclude: /app/,
+          test: /\.css$/,
+          include: /(styles|prebuilt)/,
           loader: extractTextPlugin.extract({
             fallback: 'style-loader',
             use: 'css-loader'
@@ -82,12 +87,20 @@ module.exports = function(env) {
       ]
     },
     plugins: [
+      new copyPlugin([
+        { from: 'app.loader.js' },
+        { from: 'assets', to: 'assets' },
+      ]),
       new extractTextPlugin({
         filename: '[name].css'
       }),
-      new webpack.ProvidePlugin({
-        $: 'jquery',
-        jQuery: 'jquery',
+    ].concat(env.aot ? [
+      new ngToolsWebpack.AotPlugin({
+        tsConfigPath: './tsconfig.json',
+        entryModule: __dirname + '/app/app.module#AppModule',
+        locale: env.locale === "en" ? null : env.locale,
+        i18nFile: env.locale === "en" ? null : `./app/locale/messages.${env.locale}.xlf`,
+        i18nFormat: env.locale === "en" ? null : 'xlf'
       }),
       new webpack.LoaderOptionsPlugin({
         minimize: true,
@@ -101,14 +114,6 @@ module.exports = function(env) {
           comments: false
         },
         sourceMap: false
-      })
-    ].concat(env.aot ? [
-      new ngToolsWebpack.AotPlugin({
-        tsConfigPath: './tsconfig.json',
-        entryModule: __dirname + '/app/app.module#AppModule',
-        locale: 'fr',
-        i18nFile: './app/locale/messages.fr.xlf',
-        i18nFormat: 'xlf'
       })
     ] : [
       // Workaround for angular/angular#11580

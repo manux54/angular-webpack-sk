@@ -1,0 +1,14 @@
+<nav>
+  <md-toolbar color="primary">
+    <img class="navbar-logo" src="dist/assets/angular.svg" />
+    <span class="navbar-brand" i18n="App Brand|App Title in the navigation bar">My App</span>
+    <a routerLink="/dashboard" md-button i18n="Dashboard Module | Dashboard Module Title">Dashboard</a>
+    <span class="right-align-spacer"></span>
+    <button md-icon-button [mdMenuTriggerFor]="menu">
+      <md-icon>more_vert</md-icon>
+    </button>
+    <md-menu #menu="mdMenu" [overlapTrigger]="false">
+      <button md-menu-item (click)="onUserPreferenceClicked()">User preferences</button>
+    </md-menu>
+  </md-toolbar>
+</nav>

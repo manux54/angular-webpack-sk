@@ -1,0 +1,16 @@
+<h1 md-dialog-title>User Preferences</h1>
+<div md-dialog-content class="content">
+  <div class="languagePreferences">
+    <h3 class="sectionHeader" i18n="Language Section Title|User Preferences">Language</h3>
+    <form [formGroup]="languageFormGroup">
+      <md-radio-group formControlName="language" id="languageRadioGroup">
+        <md-radio-button value="fr" i18n="French Language|French radio-button option">French</md-radio-button>
+        <md-radio-button value="en" i18n="English Language|English radio-button option">English</md-radio-button>
+        <md-radio-button value="es" i18n="Spanish Language|Spanish radio-button option">Spanish</md-radio-button>
+      </md-radio-group>
+    </form>
+  </div>
+</div>
+<footer md-dialog-actions>
+  <button md-raised-button (click)="onCloseDialog()">Ok</button>
+</footer>

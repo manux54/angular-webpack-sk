@@ -21,7 +21,8 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "AppConfig": ["app/config/app-dev.config"]
+      "AppConfig": ["app/config/app-dev.config"],
+      "i18n-providers": ["app/locale/i18n-providers.en"]
     }
   },
   "exclude": [

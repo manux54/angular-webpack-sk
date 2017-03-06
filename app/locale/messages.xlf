@@ -2,11 +2,65 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en" datatype="plaintext" original="ng2.template">
     <body>
-      <trans-unit id="e172fc6f9eb3eaf28073cf76db0c01b61ecc89ae" datatype="html">
-        <source>Internationalized Hello World from Angular</source>
+      <trans-unit id="f3efad47fb570cda14639e66511a5fc9b3e9085f" datatype="html">
+        <source>Language</source>
+        <target/>
+        <note priority="1" from="description">User Preferences</note>
+        <note priority="1" from="meaning">Language Section Title</note>
+      </trans-unit>
+      <trans-unit id="4122077e98b9dc113f0d0f822f46150188d42a35" datatype="html">
+        <source>French</source>
+        <target/>
+        <note priority="1" from="description">French radio-button option</note>
+        <note priority="1" from="meaning">French Language</note>
+      </trans-unit>
+      <trans-unit id="67176fbb15ce9a110d02fd9642d09e8b307cd209" datatype="html">
+        <source>English</source>
+        <target/>
+        <note priority="1" from="description">English radio-button option</note>
+        <note priority="1" from="meaning">English Language</note>
+      </trans-unit>
+      <trans-unit id="1a3b5d5493865eae48be4205f567563c26204914" datatype="html">
+        <source>Spanish</source>
+        <target/>
+        <note priority="1" from="description">Spanish radio-button option</note>
+        <note priority="1" from="meaning">Spanish Language</note>
+      </trans-unit>
+      <trans-unit id="415bcd4561663e8b12d8784e6d650fee4a35b73a" datatype="html">
+        <source>My App</source>
+        <target/>
+        <note priority="1" from="description">App Title in the navigation bar</note>
+        <note priority="1" from="meaning">App Brand</note>
+      </trans-unit>
+      <trans-unit id="8ded2d4e85c3ab6313b5d5ce48520fc15d89d983" datatype="html">
+        <source>Dashboard</source>
+        <target/>
+        <note priority="1" from="description"> Dashboard Module Title</note>
+        <note priority="1" from="meaning">Dashboard Module </note>
+      </trans-unit>
+      <trans-unit id="1d217c36a5b960e7bc66a9f852c49f8a207ea86a" datatype="html">
+        <source>Hello World</source>
+        <target/>
+        <note priority="1" from="description"> Module Card Title</note>
+        <note priority="1" from="meaning">Hello World </note>
+      </trans-unit>
+      <trans-unit id="03cd4947803ca483050964044d32009df8e1b7f7" datatype="html">
+        <source>The classic example</source>
+        <target/>
+        <note priority="1" from="description"> Module Card Subtitle</note>
+        <note priority="1" from="meaning">Hello World Subtitle </note>
+      </trans-unit>
+      <trans-unit id="16c36f7266d26c793d52de75763e2537c2e782c2" datatype="html">
+        <source>Hello World, the classic example on steroids.</source>
+        <target/>
+        <note priority="1" from="description">Module Card description for the Hello World Component</note>
+        <note priority="1" from="meaning">Hello World Description</note>
+      </trans-unit>
+      <trans-unit id="b5c2b9589f1f48c453e4c8c872d15b37af5e566f" datatype="html">
+        <source>Hello World Angular</source>
         <target/>
         <note priority="1" from="description">Header for the hello world component</note>
-        <note priority="1" from="meaning">Welcome Message</note>
+        <note priority="1" from="meaning">Greeting Message</note>
       </trans-unit>
     </body>
   </file>
