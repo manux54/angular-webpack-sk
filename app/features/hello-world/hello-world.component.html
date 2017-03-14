@@ -1,1 +1,13 @@
 <h1 i18n="Greeting Message|Header for the hello world component">Hello World Angular</h1>
+<form [formGroup]="sendNotificationForm">
+  <md-input-container>
+    <input mdInput placeholder="Title" formControlName="notificationTitle">
+  </md-input-container>
+  <md-input-container>
+    <textarea mdInput placeholder="Message" formControlName="notificationMessage"></textarea>
+  </md-input-container>
+  <md-slide-toggle formControlName="persistantNotification">Persistant</md-slide-toggle>
+  <button md-icon-button (click)="sendNotification()">
+    <md-icon>send</md-icon>
+  </button>
+</form>

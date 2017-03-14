@@ -1,0 +1,110 @@
+.notification-btn-container {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: 48px;
+  width: 64px;
+  cursor: pointer;
+  background-color: rgba(0,0,0,0.1);
+  border-radius: 4px;
+
+  .mat-icon {
+    font-size: 36px;
+    margin-top: 8px;
+    margin-left: 8px;
+    color: #444;
+  }
+
+  .badge {
+    width: 24px;
+    height: 24px;
+    background-color: #444;
+    border-radius: 12px;
+    line-height: 24px;
+    text-align: center;
+    position: relative;
+    top: -43px;
+    left: 35px;
+    color: #ddd;
+    font-weight: bold;
+    border: solid 2px;
+  }
+}
+
+.notification-pane {
+  position: absolute;
+  top: 0;
+  bottom: 3em;
+  right: 0;
+  width: 10%;
+  min-width: 300px;
+  background-color: rgba(0,0,0,0.8);
+  border-bottom-left-radius: 4px;
+
+  .group {
+    .groupName {
+      color: #eee;
+      font-size: larger;
+      font-weight: bold;
+      width: 90%;
+      margin: 0 auto;
+      border-bottom: solid 1px white;
+      padding: 10px 0;
+      margin-bottom: 10px;
+    }
+
+    .notification {
+      cursor: pointer;
+      padding: 5px 10px 10px 25px;
+
+      .newNotificationBadge {
+        color: #673ab7;
+        position: relative;
+        float: left;
+        left: -23px;
+        top: -2px;
+        width: 0;
+      }
+
+      &:hover {
+        background-color: #222;
+      }
+
+      .title {
+        font-weight: bold;
+        color: #eee;
+      }
+
+      .body-toggle {
+        color: #bbb;
+        float: right;
+        min-width: 1.5em;
+        text-align: right;
+      }
+
+      .body {
+        color: #bbb;
+        overflow-x: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        line-height: 1.2em;
+        margin-bottom: 0.5em;
+
+        &.open {
+          white-space: normal;
+        }
+      }
+
+      .footer {
+        color: #bbb;
+        font-size: smaller;
+        text-align: right;
+      }
+
+      .delete {
+        color: #eee;
+        float: right;
+      }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+<div class="notification-btn-container" (click)="onNotificationBadgeClick($event)">
+  <md-icon>comment</md-icon>
+  <div class="badge" *ngIf="newCount">{{newCount}}</div>
+</div>
+<div class="notification-pane" [@notificationPaneTrigger]="notificationPaneState" (@notificationPaneTrigger.done)="onNotificationPaneStateChanged($event)">
+  <div *ngFor="let group of groups">
+    <div class="group">
+      <div class="groupName">{{group}}</div>
+      <div *ngFor="let localNotification of getGroupNotifications(group)" class="notification" (click)="onNotificationClicked(localNotification)">
+        <md-icon *ngIf="localNotification.isNew" class="newNotificationBadge">fiber_manual_record</md-icon>
+        <div class="delete" (click)="onDeleteClicked(localNotification, $event)"><md-icon>close</md-icon></div>
+        <div class="title">{{localNotification.title}}</div>
+        <div>
+          <div class="body-toggle" (click)="onNotificationToggleClick(localNotification, $event)">
+            <md-icon *ngIf="!localNotification.isOpened">expand_more</md-icon>
+            <md-icon *ngIf="localNotification.isOpened">expand_less</md-icon>
+          </div>
+          <div class="body" [class.open]="localNotification.isOpened">{{localNotification.text}}</div>
+        </div>
+        <div class="footer">{{localNotification.notificationDate | date}}</div>
+      </div>
+    </div>
+  </div>
+</div>
