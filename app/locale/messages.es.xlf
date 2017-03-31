@@ -56,6 +56,24 @@
         <note priority="1" from="description">Module Card description for the Hello World Component</note>
         <note priority="1" from="meaning">Hello World Description</note>
       </trans-unit>
+      <trans-unit id="3c6dc6b785a81fd19266bb197598e0912fe37d7a" datatype="html">
+        <source>Charts</source>
+        <target>Gráficos</target>
+        <note priority="1" from="description"> Module Card Title</note>
+        <note priority="1" from="meaning">Charts </note>
+      </trans-unit>
+      <trans-unit id="9565b6196a1b885cde9d9f17f38978e958e71daa" datatype="html">
+        <source>Examples of the most popular charts</source>
+        <target>Ejemplos de los gráficos más populares</target>
+        <note priority="1" from="description"> Module Card Subtitle</note>
+        <note priority="1" from="meaning">Charts Subtitle </note>
+      </trans-unit>
+      <trans-unit id="b7cd39b179a2eff49e2a3c4ce2e49767e2019889" datatype="html">
+        <source>Angular components displaying svg charts: line chart, bar chart, histogram, scatterplot and more.</source>
+        <target>Componentes Angular que muestran gráficos svg: gráfico de líneas, gráfico de barras, histograma, diagrama de dispersión y más</target>
+        <note priority="1" from="description">Module Card description for the Charts Component</note>
+        <note priority="1" from="meaning">Charts Description</note>
+      </trans-unit>
       <trans-unit id="b5c2b9589f1f48c453e4c8c872d15b37af5e566f" datatype="html">
         <source>Hello World Angular</source>
         <target>Hola mundo Angular</target>

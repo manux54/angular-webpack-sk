@@ -15,6 +15,10 @@ const routes: Routes = [
     loadChildren: "./features/hello-world/hello-world.module#HelloWorldModule",
     path: "helloworld",
   },
+  {
+    loadChildren: "./features/charts/charts.module#ChartsModule",
+    path: "charts",
+  },
 ];
 
 @NgModule({

@@ -1,4 +1,5 @@
-import { animate, AnimationEntryMetadata, keyframes, state, style, transition, trigger } from "@angular/core";
+import { animate, keyframes, state, style, transition, trigger } from "@angular/animations";
+import { AnimationEntryMetadata } from "@angular/core";
 
 export const notificationsAnimations: AnimationEntryMetadata[] = [
   trigger("notificationPaneTrigger", [

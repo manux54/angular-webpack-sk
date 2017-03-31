@@ -1,6 +1,5 @@
 import { AnimationTransitionEvent, Component, ElementRef, HostListener } from "@angular/core";
 import { MdSnackBar, MdSnackBarRef } from "@angular/material";
-
 import { Router } from "@angular/router";
 
 import { Notification } from "./notification.model";
