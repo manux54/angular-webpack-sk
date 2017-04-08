@@ -3,46 +3,27 @@ type NumberOptionResolver = (data: any, index: number) => number;
 
 type ChartType = "line" | "bar" | "scatterPlot" | "pie";
 
-interface LineChartOptions {
-  chartType: ChartType;
-  xAxisProperty: string;
-  yAxisProperty: string;
-  stroke: {color: string, width: number};
-}
+class ChartOptions {
+  public chartType: ChartType = "line";
+  public xAxisProperty: string = "x";
+  public yAxisProperty: string = "y";
+  public orientation: "horizontal" | "vertical" = "horizontal";
+  public stroke: string | string[] | StringOptionResolver = null;
+  public strokeWidth: number = 1;
+  public fill: string | string[] | StringOptionResolver = null;
+  public markerSize: number | NumberOptionResolver = null;
+  public padding: number;
 
-interface BarChartOptions {
-  chartType: ChartType;
-  labelAxisProperty: string;
-  valueAxisProperty: string;
-  orientation: "horizontal" | "vertical";
-  barPadding: number;
-  barColor: string | string[] | StringOptionResolver;
-}
-
-interface ScatterPlotOptions {
-  chartType: ChartType;
-  xAxisProperty: string;
-  yAxisProperty: string;
-  markerSize: number | NumberOptionResolver;
-  markerColor: string | string[] | StringOptionResolver;
-}
-
-interface PieChartOptions {
-  chartType: ChartType;
-  labelAxisProperty: string;
-  valueAxisProperty: string;
-  pieSectionColor: string | string[] | StringOptionResolver;
-}
-
-type ChartOptions = LineChartOptions | BarChartOptions | ScatterPlotOptions | PieChartOptions;
+  public constructor(init?: Partial<ChartOptions>) {
+    if (init) {
+      Object.assign(this, init);
+    }
+  }
+};
 
 export {
-  BarChartOptions,
   ChartOptions,
   ChartType,
-  LineChartOptions,
   NumberOptionResolver,
-  PieChartOptions,
-  ScatterPlotOptions,
   StringOptionResolver,
 };

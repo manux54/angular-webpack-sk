@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { BarChartOptions, LineChartOptions, ScatterPlotOptions } from "../../widgets/ng-chart";
+import { ChartOptions } from "../../widgets/ng-chart";
 
 @Component({
   styleUrls: ["./charts.component.less"],
@@ -30,14 +30,14 @@ export class ChartsComponent {
     },
   ];
 
-  public barChartOptions: BarChartOptions = {
-    barColor: (d: any, i: number) => `rgb(${d.age * 5},0,0)`,
-    barPadding: 2,
+  public barChartOptions: ChartOptions = new ChartOptions({
     chartType: "bar",
-    labelAxisProperty: "name",
+    fill: (d: any, i: number) => `rgb(${d.age * 5},0,0)`,
     orientation: "vertical",
-    valueAxisProperty: "age",
-  };
+    padding: 2,
+    xAxisProperty: "name",
+    yAxisProperty: "age",
+  });
 
   public sales: any[] = [
     {
@@ -86,30 +86,28 @@ export class ChartsComponent {
     },
   ];
 
-  public options: LineChartOptions = {
+  public options: ChartOptions = new ChartOptions({
     chartType: "line",
-    stroke: {
-      color: "blue",
-      width: 2,
-    },
+    stroke: "blue",
+    strokeWidth: 2,
     xAxisProperty: "month",
     yAxisProperty: "sales",
-  };
+  });
 
-  public options2: BarChartOptions = {
-    barColor: "red",
-    barPadding: 4,
+  public options2: ChartOptions = new ChartOptions({
     chartType: "bar",
-    labelAxisProperty: "month",
+    fill: "red",
     orientation: "vertical",
-    valueAxisProperty: "sales",
-  };
+    padding: 4,
+    xAxisProperty: "month",
+    yAxisProperty: "sales",
+  });
 
-  public options3: ScatterPlotOptions = {
+  public options3: ChartOptions = new ChartOptions({
     chartType: "scatterPlot",
-    markerColor: "purple",
+    fill: "purple",
     markerSize: 5,
     xAxisProperty: "month",
     yAxisProperty: "sales",
-  };
+  });
 }

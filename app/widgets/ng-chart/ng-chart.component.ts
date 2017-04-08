@@ -6,13 +6,9 @@ import { select, Selection } from "d3-selection";
 import { line } from "d3-shape";
 
 import {
-  BarChartOptions,
   ChartOptions,
   ChartType,
-  LineChartOptions,
   NumberOptionResolver,
-  PieChartOptions,
-  ScatterPlotOptions,
   StringOptionResolver,
 } from "./ng-chart.model";
 
@@ -22,7 +18,7 @@ import {
   templateUrl: "./ng-chart.component.html",
 })
 export class NgChartComponent implements OnInit {
-  @Input() public chartTitle: string = "Chart";
+  @Input() public chartTitle: string = null;
 
   @Input() public dataSet: any[] = [];
 
@@ -31,7 +27,7 @@ export class NgChartComponent implements OnInit {
 
   @Input() public padding: number | {bottom: number, left: number, right: number, top: number} = 20;
 
-  @Input() public chartOptions: ChartOptions | ChartOptions[];
+  @Input() public chartOptions: ChartOptions | ChartOptions[] = new ChartOptions();
 
   private get paddingValue(): {bottom: number, left: number, right: number, top: number} {
     if (typeof(this.padding) === "number") {
@@ -55,36 +51,36 @@ export class NgChartComponent implements OnInit {
       .attr("height", this.height);
 
     if (this.chartOptions instanceof Array) {
-      this.chartOptions.forEach((chart: ChartOptions) => this.appendChart(svg, chart));
+      this.chartOptions.forEach((opt: ChartOptions) => this.appendChart(svg, opt));
     } else {
       this.appendChart(svg, this.chartOptions);
     }
   }
 
-  private appendChart(svg: Selection<any, any, null, undefined>, chart: ChartOptions): void {
-    switch (chart.chartType) {
+  private appendChart(svg: Selection<any, any, null, undefined>, option: ChartOptions): void {
+    switch (option.chartType) {
       case "bar":
-        this.appendBarChart(svg, <BarChartOptions> chart);
+        this.appendBarChart(svg, option);
         break;
       case "line":
-        this.appendLineChart(svg, <LineChartOptions> chart);
+        this.appendLineChart(svg, option);
         break;
       case "pie":
-        this.appendPieChart(svg, <PieChartOptions> chart);
+        this.appendPieChart(svg, option);
         break;
       case "scatterPlot":
-        this.appendScatterPlot(svg, <ScatterPlotOptions> chart);
+        this.appendScatterPlot(svg, option);
         break;
       default:
         break;
     }
   }
 
-  private appendBarChart(svg: Selection<any, any, null, undefined>, chart: BarChartOptions): void {
+  private appendBarChart(svg: Selection<any, any, null, undefined>, option: ChartOptions): void {
 
-    if (chart.orientation === "horizontal") {
+    if (option.orientation === "horizontal") {
       const valueScale = scaleLinear()
-        .domain(this.getDomainRange(chart.valueAxisProperty, true))
+        .domain(this.getDomainRange(option.xAxisProperty, true))
         .range([this.paddingValue.left, this.width - this.paddingValue.right])
         .nice();
 
@@ -94,13 +90,13 @@ export class NgChartComponent implements OnInit {
         .append("rect")
         .attr("x", (d: any) => this.paddingValue.left)
         .attr("y", (d: any, i: number) => i * (this.height / this.dataSet.length))
-        .attr("width", (d: any) => valueScale(d[chart.valueAxisProperty]))
-        .attr("height", this.height / this.dataSet.length - chart.barPadding)
-        .attr("fill", (d: any, i: number) => this.getString(chart.barColor, d, i));
+        .attr("width", (d: any) => valueScale(d[option.xAxisProperty]))
+        .attr("height", this.height / this.dataSet.length - option.padding)
+        .attr("fill", (d: any, i: number) => this.getString(option.fill, d, i));
 
     } else {
       const valueScale = scaleLinear()
-        .domain(this.getDomainRange(chart.valueAxisProperty, true))
+        .domain(this.getDomainRange(option.yAxisProperty, true))
         .range([this.height - this.paddingValue.top, this.paddingValue.bottom])
         .nice();
 
@@ -110,17 +106,17 @@ export class NgChartComponent implements OnInit {
         .data(this.dataSet)
         .enter()
         .append("rect")
-        .attr("x", (d: any, i: number) => i * (width / this.dataSet.length) + this.paddingValue.left + chart.barPadding)
-        .attr("y", (d: any) => valueScale(d[chart.valueAxisProperty]))
-        .attr("width", width / this.dataSet.length - chart.barPadding * 2)
-        .attr("height", (d: any) => this.height - valueScale(d[chart.valueAxisProperty]) - this.paddingValue.bottom)
-        .attr("fill", (d: any, i: number) => this.getString(chart.barColor, d, i));
+        .attr("x", (d: any, i: number) => i * (width / this.dataSet.length) + this.paddingValue.left + option.padding)
+        .attr("y", (d: any) => valueScale(d[option.yAxisProperty]))
+        .attr("width", width / this.dataSet.length - option.padding * 2)
+        .attr("height", (d: any) => this.height - valueScale(d[option.yAxisProperty]) - this.paddingValue.bottom)
+        .attr("fill", (d: any, i: number) => this.getString(option.fill, d, i));
 
       svg.selectAll("text")
         .data(this.dataSet)
         .enter()
         .append("text")
-        .text((d: any, i: number) => d[chart.labelAxisProperty])
+        .text((d: any, i: number) => d[option.xAxisProperty])
         .attr("x", (d: any, i: number) => (i + 0.5) * (width / this.dataSet.length) + this.paddingValue.left)
         .attr("y", this.height - 5)
         .attr("text-anchor", "middle")
@@ -129,20 +125,20 @@ export class NgChartComponent implements OnInit {
     }
   }
 
-  private appendLineChart(svg: Selection<any, any, null, undefined>, chart: LineChartOptions): void {
+  private appendLineChart(svg: Selection<any, any, null, undefined>, option: ChartOptions): void {
     const xScale = scaleLinear()
-      .domain(this.getDomainRange(chart.xAxisProperty))
+      .domain(this.getDomainRange(option.xAxisProperty))
       .range([this.paddingValue.left, this.width - this.paddingValue.right])
       .nice();
 
     const yScale = scaleLinear()
-      .domain(this.getDomainRange(chart.yAxisProperty, true))
+      .domain(this.getDomainRange(option.yAxisProperty, true))
       .range([this.height - this.paddingValue.top, this.paddingValue.bottom])
       .nice();
 
     const lineFct = line()
-      .x((d: any) => xScale(d[chart.xAxisProperty]))
-      .y((d: any) => yScale(d[chart.yAxisProperty]));
+      .x((d: any) => xScale(d[option.xAxisProperty]))
+      .y((d: any) => yScale(d[option.yAxisProperty]));
 
     svg.append("g")
       .call(axisLeft(yScale))
@@ -156,44 +152,44 @@ export class NgChartComponent implements OnInit {
 
     svg.append("path")
       .attr("d", lineFct(this.dataSet))
-      .attr("stroke", chart.stroke.color)
-      .attr("stroke-width", chart.stroke.width)
+      .attr("stroke", (d: any, i: number) => this.getString(option.stroke, d, i))
+      .attr("stroke-width", option.strokeWidth)
       .attr("fill", "none");
   }
 
-  private appendPieChart(svg: Selection<any, any, null, undefined>, chart: PieChartOptions): void {
+  private appendPieChart(svg: Selection<any, any, null, undefined>, option: ChartOptions): void {
     svg.append("h1").text("Pie Chart");
   }
 
-  private appendScatterPlot(svg: Selection<any, any, null, undefined>, chart: ScatterPlotOptions): void {
+  private appendScatterPlot(svg: Selection<any, any, null, undefined>, option: ChartOptions): void {
     const xScale = scaleLinear()
-      .domain(this.getDomainRange(chart.xAxisProperty))
+      .domain(this.getDomainRange(option.xAxisProperty))
       .range([this.paddingValue.left, this.width - this.paddingValue.right])
       .nice();
 
     const yScale = scaleLinear()
-      .domain(this.getDomainRange(chart.yAxisProperty, true))
+      .domain(this.getDomainRange(option.yAxisProperty, true))
       .range([this.height - this.paddingValue.top, this.paddingValue.bottom])
       .nice();
 
     svg.append("g")
-      .call(axisLeft(yScale))
-      .attr("class", "axis")
+      .call(axisLeft(yScale).ticks(5))
+      .attr("class", "axis y-axis")
       .attr("transform", `translate(${this.paddingValue.left},0)`);
 
     svg.append("g")
       .call(axisBottom(xScale))
-      .attr("class", "axis")
+      .attr("class", "axis x-axis")
       .attr("transform", `translate(0,${this.height - this.paddingValue.bottom})`);
 
     svg.selectAll("circle")
       .data(this.dataSet)
       .enter()
       .append("circle")
-      .attr("cx", (d: any) => xScale(d[chart.xAxisProperty]))
-      .attr("cy", (d: any) => yScale(d[chart.yAxisProperty]))
-      .attr("r", (d: any, i: number) => this.getNumber(chart.markerSize, d, i))
-      .attr("fill", (d: any, i: number) => this.getString(chart.markerColor, d, i));
+      .attr("cx", (d: any) => xScale(d[option.xAxisProperty]))
+      .attr("cy", (d: any) => yScale(d[option.yAxisProperty]))
+      .attr("r", (d: any, i: number) => this.getNumber(option.markerSize, d, i))
+      .attr("fill", (d: any, i: number) => this.getString(option.fill, d, i));
   }
 
   private getDomainRange(property: string, zeroRange: boolean = false): number[] {
