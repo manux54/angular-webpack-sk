@@ -91,9 +91,18 @@ export class ChartsComponent {
     stroke: "blue",
     strokeWidth: 2,
     xAxisProperty: "month",
+    xAxisTitle: "Months",
     yAxisProperty: "sales",
     yAxisTicks: 5,
+    yAxisTitle: "Sales in K",
   });
+
+  public lineChartPadding = {
+    bottom: 34,
+    left: 40,
+    right: 20,
+    top: 20,
+  };
 
   public options2: ChartOptions = new ChartOptions({
     chartType: "bar",

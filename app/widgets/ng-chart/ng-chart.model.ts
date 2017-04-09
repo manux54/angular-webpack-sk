@@ -15,6 +15,11 @@ class ChartOptions {
   public padding: number;
   public xAxisTicks: number = null;
   public yAxisTicks: number = null;
+  public class: string = null;
+  public xAxisTitle: string = null;
+  public yAxisTitle: string = null;
+  public axisTitleSize: number = 14;
+  public yAxisTitleDirection: "Up" | "Down" = "Up";
 
   public constructor(init?: Partial<ChartOptions>) {
     if (init) {

@@ -137,7 +137,7 @@ export class NgChartComponent implements OnInit {
 
     let yScale = scaleLinear()
       .domain(this.getDomainRange(option.yAxisProperty, true))
-      .range([this.height - this.paddingValue.top, this.paddingValue.bottom]);
+      .range([this.height - this.paddingValue.bottom, this.paddingValue.top]);
 
     if (!option.yAxisTicks) {
       yScale = yScale.nice();
@@ -151,21 +151,48 @@ export class NgChartComponent implements OnInit {
 
     svg.append("g")
       .call(yAxis)
-      .attr("class", "axis")
+      .attr("class", "axis y-axis")
       .attr("transform", `translate(${this.paddingValue.left},0)`);
 
     const xAxis = option.xAxisTicks ? axisBottom(xScale).ticks(option.xAxisTicks) : axisBottom(xScale);
 
     svg.append("g")
       .call(xAxis)
-      .attr("class", "axis")
+      .attr("class", "axis x-axis")
       .attr("transform", `translate(0,${this.height - this.paddingValue.bottom})`);
+
+    if (option.xAxisTitle) {
+      svg.append("text")
+        .text(option.xAxisTitle)
+        .attr("x", this.paddingValue.left + (this.width - this.paddingValue.left - this.paddingValue.right) / 2)
+        .attr("y", this.height)
+        .attr("font-size", option.axisTitleSize)
+        .attr("text-anchor", "middle")
+        .attr("class", "axis-label, x-axis");
+    }
+
+    if (option.yAxisTitle) {
+      const yOrigin: number =
+        this.paddingValue.top + (this.height - this.paddingValue.top - this.paddingValue.bottom) / 2;
+
+      const xOrigin: number = option.yAxisTitleDirection === "Up" ? option.axisTitleSize : 0;
+
+      const rotation: number = option.yAxisTitleDirection === "Up" ? -90 : 90;
+
+      svg.append("text")
+        .text(option.yAxisTitle)
+        .attr("font-size", option.axisTitleSize)
+        .attr("transform", `translate(${xOrigin},${yOrigin}) rotate(${rotation})`)
+        .attr("text-anchor", "middle")
+        .attr("class", "axis-label y-axis");
+    }
 
     svg.append("path")
       .attr("d", lineFct(this.dataSet))
       .attr("stroke", (d: any, i: number) => this.getString(option.stroke, d, i))
       .attr("stroke-width", option.strokeWidth)
-      .attr("fill", "none");
+      .attr("fill", "none")
+      .attr("class", "line" + option.class ? " " + option.class : "");
   }
 
   private appendPieChart(svg: Selection<any, any, null, undefined>, option: ChartOptions): void {
