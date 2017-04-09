@@ -13,6 +13,8 @@ class ChartOptions {
   public fill: string | string[] | StringOptionResolver = null;
   public markerSize: number | NumberOptionResolver = null;
   public padding: number;
+  public xAxisTicks: number = null;
+  public yAxisTicks: number = null;
 
   public constructor(init?: Partial<ChartOptions>) {
     if (init) {

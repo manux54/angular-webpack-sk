@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit } from "@angular/core";
+import { Component, ElementRef, Input, OnInit, ViewEncapsulation } from "@angular/core";
 
 import { axisBottom, axisLeft} from "d3-axis";
 import { scaleLinear, ScaleLinear } from "d3-scale";
@@ -18,7 +18,8 @@ import {
   templateUrl: "./ng-chart.component.html",
 })
 export class NgChartComponent implements OnInit {
-  @Input() public chartTitle: string = null;
+  @Input() public title: string = null;
+  @Input() public subTitle: string = null;
 
   @Input() public dataSet: any[] = [];
 
@@ -112,41 +113,51 @@ export class NgChartComponent implements OnInit {
         .attr("height", (d: any) => this.height - valueScale(d[option.yAxisProperty]) - this.paddingValue.bottom)
         .attr("fill", (d: any, i: number) => this.getString(option.fill, d, i));
 
-      svg.selectAll("text")
+      svg.append("g")
+        .attr("class", "axis")
+        .selectAll("text")
         .data(this.dataSet)
         .enter()
         .append("text")
         .text((d: any, i: number) => d[option.xAxisProperty])
         .attr("x", (d: any, i: number) => (i + 0.5) * (width / this.dataSet.length) + this.paddingValue.left)
         .attr("y", this.height - 5)
-        .attr("text-anchor", "middle")
-        .attr("fill", "red")
-        .attr("font-weight", "bold");
+        .attr("text-anchor", "middle");
     }
   }
 
   private appendLineChart(svg: Selection<any, any, null, undefined>, option: ChartOptions): void {
-    const xScale = scaleLinear()
+    let xScale = scaleLinear()
       .domain(this.getDomainRange(option.xAxisProperty))
-      .range([this.paddingValue.left, this.width - this.paddingValue.right])
-      .nice();
+      .range([this.paddingValue.left, this.width - this.paddingValue.right]);
 
-    const yScale = scaleLinear()
+    if (!option.xAxisTicks) {
+      xScale = xScale.nice();
+    }
+
+    let yScale = scaleLinear()
       .domain(this.getDomainRange(option.yAxisProperty, true))
-      .range([this.height - this.paddingValue.top, this.paddingValue.bottom])
-      .nice();
+      .range([this.height - this.paddingValue.top, this.paddingValue.bottom]);
+
+    if (!option.yAxisTicks) {
+      yScale = yScale.nice();
+    }
 
     const lineFct = line()
       .x((d: any) => xScale(d[option.xAxisProperty]))
       .y((d: any) => yScale(d[option.yAxisProperty]));
 
+    const yAxis = option.yAxisTicks ? axisLeft(yScale).ticks(option.yAxisTicks) : axisLeft(yScale);
+
     svg.append("g")
-      .call(axisLeft(yScale))
+      .call(yAxis)
       .attr("class", "axis")
       .attr("transform", `translate(${this.paddingValue.left},0)`);
 
+    const xAxis = option.xAxisTicks ? axisBottom(xScale).ticks(option.xAxisTicks) : axisBottom(xScale);
+
     svg.append("g")
-      .call(axisBottom(xScale))
+      .call(xAxis)
       .attr("class", "axis")
       .attr("transform", `translate(0,${this.height - this.paddingValue.bottom})`);
 

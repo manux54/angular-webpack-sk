@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, ViewEncapsulation } from "@angular/core";
 import { ChartOptions } from "../../widgets/ng-chart";
 
 @Component({
@@ -92,6 +92,7 @@ export class ChartsComponent {
     strokeWidth: 2,
     xAxisProperty: "month",
     yAxisProperty: "sales",
+    yAxisTicks: 5,
   });
 
   public options2: ChartOptions = new ChartOptions({
