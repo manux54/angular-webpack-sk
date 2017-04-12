@@ -92,7 +92,6 @@ export class ChartsComponent {
     strokeWidth: 2,
     xAxisGridLines: "minor",
     xAxisProperty: "month",
-    xAxisTicks: 11,
     xAxisTitle: "Months",
     yAxisGridLines: "minor",
     yAxisProperty: "sales",

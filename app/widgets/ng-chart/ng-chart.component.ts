@@ -155,114 +155,66 @@ export class NgChartComponent implements OnInit {
       .x((d: any) => xScale(d[option.xAxisProperty]))
       .y((d: any) => yScale(d[option.yAxisProperty]));
 
-    let yAxis = option.yAxisTicks ? axisLeft(yScale).ticks(option.yAxisTicks) : axisLeft(yScale);
+    let yAxis = axisLeft(yScale).ticks(option.yAxisTicks);
 
+    // TODO : Move formating to configuration options
     yAxis = yAxis.tickFormat(formatPrefix(",.0", 1e3));
 
     svg.append("g")
       .attr("class", "axis y-axis")
       .call(yAxis);
 
-    const ticks: number[] = [];
-    let prevTick: number = null;
-
-    yScale.ticks(option.yAxisTicks).forEach((tick: number) => {
-      if (prevTick !== null) {
-        ticks.push((prevTick + tick) / 2);
-      }
-      ticks.push(tick);
-      prevTick = tick;
-    });
-
-    svg.append("g")
-      .attr("class", "grid-lines y-axis minor")
-      .selectAll("lines")
-      .data(ticks)
-      .enter()
-      .append("line")
-      .attr("x1", 0)
-      .attr("x2", width)
-      .attr("y1", (d: number) => yScale(d))
-      .attr("y2", (d: number) => yScale(d));
-/*
-    gridLines.append("line")
-      .attr("x1", 0)
-      .attr("x2", width)
-      .attr("y1", (d: number) => yScale(d + 2500))
-      .attr("y2", (d: number) => yScale(d + 2500));
-*/
-/*      svg.selectAll("rect")
-        .data(this.dataSet)
-        .enter()
-        .append("rect")
-        .attr("x", 0)
-        .attr("y", (d: any, i: number) => i * (height / this.dataSet.length))
-        .attr("width", (d: any) => valueScale(d[option.xAxisProperty]))
-        .attr("height", height / this.dataSet.length - option.padding)
-        .attr("fill", (d: any, i: number) => this.getString(option.fill, d, i));
-  */
-/*
-    axisG.selectAll("line").data(yScale.ticks(option.yAxisTicks * 2), (d: any) => d)
-      .enter()
-      .append("line")
-      .attr("class", "grid-lines y-axis minor")
-      .attr("x1", 0)
-      .attr("x2", -width)
-      .attr("y1", yScale)
-      .attr("y2", yScale);
-
-*/
-
-/*
     if (option.yAxisGridLines) {
-      let gridLines = svg.append("g")
-        .attr("class", "grid-lines y-axis")
+      const ticks: number[] = [];
+      let prevTick: number = null;
+
+      yScale.ticks(option.yAxisTicks).forEach((tick: number) => {
+        if (prevTick !== null && option.yAxisGridLines === "minor") {
+          ticks.push(yScale((prevTick + tick) / 2));
+        }
+        ticks.push(yScale(tick));
+        prevTick = tick;
+      });
+
+      svg.append("g")
+        .attr("class", "grid-lines y-axis " + option.yAxisGridLines)
+        .selectAll("lines")
+        .data(ticks)
+        .enter()
+        .append("line")
+        .attr("x1", 0)
+        .attr("x2", width)
+        .attr("y1", (d: number) => d)
+        .attr("y2", (d: number) => d);
     }
-*/
-/*
-    switch (option.yAxisGridLines) {
-      case "major":
-        svg.append("g")
-          .call(yAxis.tickSize(-(width)))
-          .attr("class", "grid-lines y-axis major");
-//          .attr("transform", `translate(${this.paddingValue.left},0)`);
-      break;
-      case "minor":
-        svg.append("g")
-          .call(yAxis.tickSize(-(width)))
-          .attr("class", "grid-lines y-axis minor");
-//          .attr("transform", `translate(${this.paddingValue.left},0)`);
-      break;
-      default:
-      break;
-    }
-*/
-    let xAxis = option.xAxisTicks ? axisBottom(xScale).ticks(option.xAxisTicks) : axisBottom(xScale);
 
     svg.append("g")
-      .call(xAxis)
+      .call(axisBottom(xScale).ticks(option.xAxisTicks))
       .attr("class", "axis x-axis")
       .attr("transform", `translate(0,${height})`);
 
-    switch (option.xAxisGridLines) {
-      case "major":
-        xAxis = option.xAxisTicks ? axisBottom(xScale).ticks(option.xAxisTicks) : axisBottom(xScale);
+    if (option.xAxisGridLines) {
+      const ticks: number[] = [];
+      let prevTick: number = null;
 
-        svg.append("g")
-          .call(xAxis.tickSize(-(height)))
-          .attr("class", "grid-lines x-axis major")
-          .attr("transform", `translate(0,${height})`);
-      break;
-      case "minor":
-        xAxis = option.xAxisTicks ? axisBottom(xScale).ticks(option.xAxisTicks * 2) : axisBottom(xScale);
+      xScale.ticks(option.xAxisTicks).forEach((tick: number) => {
+        if (prevTick !== null && option.xAxisGridLines === "minor") {
+          ticks.push(xScale((prevTick + tick) / 2));
+        }
+        ticks.push(xScale(tick));
+        prevTick = tick;
+      });
 
-        svg.append("g")
-          .call(xAxis.tickSize(-(height)))
-          .attr("class", "grid-lines x-axis minor")
-          .attr("transform", `translate(0,${height})`);
-      break;
-      default:
-      break;
+      svg.append("g")
+        .attr("class", "grid-lines x-axis " + option.xAxisGridLines)
+        .selectAll("lines")
+        .data(ticks)
+        .enter()
+        .append("line")
+        .attr("x1", (d: number) => d)
+        .attr("x2", (d: number) => d)
+        .attr("y1", 0)
+        .attr("y2", height);
     }
 
     if (option.xAxisTitle) {
