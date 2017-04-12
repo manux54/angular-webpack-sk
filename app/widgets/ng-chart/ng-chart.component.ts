@@ -1,6 +1,7 @@
 import { Component, ElementRef, Input, OnInit, ViewEncapsulation } from "@angular/core";
 
-import { axisBottom, axisLeft} from "d3-axis";
+import { axisBottom, axisLeft } from "d3-axis";
+import { format, formatPrefix } from "d3-format";
 import { scaleLinear, ScaleLinear } from "d3-scale";
 import { select, Selection } from "d3-selection";
 import { line } from "d3-shape";
@@ -49,7 +50,9 @@ export class NgChartComponent implements OnInit {
     const svg: Selection<any, any, null, undefined> = select(this.element.nativeElement)
       .append("svg")
       .attr("width", this.width)
-      .attr("height", this.height);
+      .attr("height", this.height)
+      .append("g")
+      .attr("transform", `translate(${this.paddingValue.left}, ${this.paddingValue.right})`);
 
     if (this.chartOptions instanceof Array) {
       this.chartOptions.forEach((opt: ChartOptions) => this.appendChart(svg, opt));
@@ -79,38 +82,39 @@ export class NgChartComponent implements OnInit {
 
   private appendBarChart(svg: Selection<any, any, null, undefined>, option: ChartOptions): void {
 
+    const width = this.width - this.paddingValue.left - this.paddingValue.right;
+    const height = this.height - this.paddingValue.top - this.paddingValue.bottom;
+
     if (option.orientation === "horizontal") {
       const valueScale = scaleLinear()
         .domain(this.getDomainRange(option.xAxisProperty, true))
-        .range([this.paddingValue.left, this.width - this.paddingValue.right])
+        .range([0, width])
         .nice();
 
       svg.selectAll("rect")
         .data(this.dataSet)
         .enter()
         .append("rect")
-        .attr("x", (d: any) => this.paddingValue.left)
-        .attr("y", (d: any, i: number) => i * (this.height / this.dataSet.length))
+        .attr("x", 0)
+        .attr("y", (d: any, i: number) => i * (height / this.dataSet.length))
         .attr("width", (d: any) => valueScale(d[option.xAxisProperty]))
-        .attr("height", this.height / this.dataSet.length - option.padding)
+        .attr("height", height / this.dataSet.length - option.padding)
         .attr("fill", (d: any, i: number) => this.getString(option.fill, d, i));
 
     } else {
       const valueScale = scaleLinear()
         .domain(this.getDomainRange(option.yAxisProperty, true))
-        .range([this.height - this.paddingValue.top, this.paddingValue.bottom])
+        .range([height, 0])
         .nice();
-
-      const width: number = this.width - this.paddingValue.left - this.paddingValue.right;
 
       svg.selectAll("rect")
         .data(this.dataSet)
         .enter()
         .append("rect")
-        .attr("x", (d: any, i: number) => i * (width / this.dataSet.length) + this.paddingValue.left + option.padding)
+        .attr("x", (d: any, i: number) => i * (width / this.dataSet.length) + option.padding)
         .attr("y", (d: any) => valueScale(d[option.yAxisProperty]))
         .attr("width", width / this.dataSet.length - option.padding * 2)
-        .attr("height", (d: any) => this.height - valueScale(d[option.yAxisProperty]) - this.paddingValue.bottom)
+        .attr("height", (d: any) => height - valueScale(d[option.yAxisProperty]))
         .attr("fill", (d: any, i: number) => this.getString(option.fill, d, i));
 
       svg.append("g")
@@ -120,16 +124,20 @@ export class NgChartComponent implements OnInit {
         .enter()
         .append("text")
         .text((d: any, i: number) => d[option.xAxisProperty])
-        .attr("x", (d: any, i: number) => (i + 0.5) * (width / this.dataSet.length) + this.paddingValue.left)
-        .attr("y", this.height - 5)
+        .attr("x", (d: any, i: number) => (i + 0.5) * (width / this.dataSet.length))
+        .attr("y", height + this.paddingValue.bottom - 5)
         .attr("text-anchor", "middle");
     }
   }
 
   private appendLineChart(svg: Selection<any, any, null, undefined>, option: ChartOptions): void {
+
+    const width = this.width - this.paddingValue.left - this.paddingValue.right;
+    const height = this.height - this.paddingValue.top - this.paddingValue.bottom;
+
     let xScale = scaleLinear()
       .domain(this.getDomainRange(option.xAxisProperty))
-      .range([this.paddingValue.left, this.width - this.paddingValue.right]);
+      .range([0, width]);
 
     if (!option.xAxisTicks) {
       xScale = xScale.nice();
@@ -137,7 +145,7 @@ export class NgChartComponent implements OnInit {
 
     let yScale = scaleLinear()
       .domain(this.getDomainRange(option.yAxisProperty, true))
-      .range([this.height - this.paddingValue.bottom, this.paddingValue.top]);
+      .range([height, 0]);
 
     if (!option.yAxisTicks) {
       yScale = yScale.nice();
@@ -147,35 +155,131 @@ export class NgChartComponent implements OnInit {
       .x((d: any) => xScale(d[option.xAxisProperty]))
       .y((d: any) => yScale(d[option.yAxisProperty]));
 
-    const yAxis = option.yAxisTicks ? axisLeft(yScale).ticks(option.yAxisTicks) : axisLeft(yScale);
+    let yAxis = option.yAxisTicks ? axisLeft(yScale).ticks(option.yAxisTicks) : axisLeft(yScale);
+
+    yAxis = yAxis.tickFormat(formatPrefix(",.0", 1e3));
 
     svg.append("g")
-      .call(yAxis)
       .attr("class", "axis y-axis")
-      .attr("transform", `translate(${this.paddingValue.left},0)`);
+      .call(yAxis);
 
-    const xAxis = option.xAxisTicks ? axisBottom(xScale).ticks(option.xAxisTicks) : axisBottom(xScale);
+    const ticks: number[] = [];
+    let prevTick: number = null;
+
+    yScale.ticks(option.yAxisTicks).forEach((tick: number) => {
+      if (prevTick !== null) {
+        ticks.push((prevTick + tick) / 2);
+      }
+      ticks.push(tick);
+      prevTick = tick;
+    });
+
+    svg.append("g")
+      .attr("class", "grid-lines y-axis minor")
+      .selectAll("lines")
+      .data(ticks)
+      .enter()
+      .append("line")
+      .attr("x1", 0)
+      .attr("x2", width)
+      .attr("y1", (d: number) => yScale(d))
+      .attr("y2", (d: number) => yScale(d));
+/*
+    gridLines.append("line")
+      .attr("x1", 0)
+      .attr("x2", width)
+      .attr("y1", (d: number) => yScale(d + 2500))
+      .attr("y2", (d: number) => yScale(d + 2500));
+*/
+/*      svg.selectAll("rect")
+        .data(this.dataSet)
+        .enter()
+        .append("rect")
+        .attr("x", 0)
+        .attr("y", (d: any, i: number) => i * (height / this.dataSet.length))
+        .attr("width", (d: any) => valueScale(d[option.xAxisProperty]))
+        .attr("height", height / this.dataSet.length - option.padding)
+        .attr("fill", (d: any, i: number) => this.getString(option.fill, d, i));
+  */
+/*
+    axisG.selectAll("line").data(yScale.ticks(option.yAxisTicks * 2), (d: any) => d)
+      .enter()
+      .append("line")
+      .attr("class", "grid-lines y-axis minor")
+      .attr("x1", 0)
+      .attr("x2", -width)
+      .attr("y1", yScale)
+      .attr("y2", yScale);
+
+*/
+
+/*
+    if (option.yAxisGridLines) {
+      let gridLines = svg.append("g")
+        .attr("class", "grid-lines y-axis")
+    }
+*/
+/*
+    switch (option.yAxisGridLines) {
+      case "major":
+        svg.append("g")
+          .call(yAxis.tickSize(-(width)))
+          .attr("class", "grid-lines y-axis major");
+//          .attr("transform", `translate(${this.paddingValue.left},0)`);
+      break;
+      case "minor":
+        svg.append("g")
+          .call(yAxis.tickSize(-(width)))
+          .attr("class", "grid-lines y-axis minor");
+//          .attr("transform", `translate(${this.paddingValue.left},0)`);
+      break;
+      default:
+      break;
+    }
+*/
+    let xAxis = option.xAxisTicks ? axisBottom(xScale).ticks(option.xAxisTicks) : axisBottom(xScale);
 
     svg.append("g")
       .call(xAxis)
       .attr("class", "axis x-axis")
-      .attr("transform", `translate(0,${this.height - this.paddingValue.bottom})`);
+      .attr("transform", `translate(0,${height})`);
+
+    switch (option.xAxisGridLines) {
+      case "major":
+        xAxis = option.xAxisTicks ? axisBottom(xScale).ticks(option.xAxisTicks) : axisBottom(xScale);
+
+        svg.append("g")
+          .call(xAxis.tickSize(-(height)))
+          .attr("class", "grid-lines x-axis major")
+          .attr("transform", `translate(0,${height})`);
+      break;
+      case "minor":
+        xAxis = option.xAxisTicks ? axisBottom(xScale).ticks(option.xAxisTicks * 2) : axisBottom(xScale);
+
+        svg.append("g")
+          .call(xAxis.tickSize(-(height)))
+          .attr("class", "grid-lines x-axis minor")
+          .attr("transform", `translate(0,${height})`);
+      break;
+      default:
+      break;
+    }
 
     if (option.xAxisTitle) {
       svg.append("text")
         .text(option.xAxisTitle)
-        .attr("x", this.paddingValue.left + (this.width - this.paddingValue.left - this.paddingValue.right) / 2)
-        .attr("y", this.height)
+        .attr("x", width / 2)
+        .attr("y", height + this.paddingValue.bottom) // Replace padding by axis height + fontSize + label padding
         .attr("font-size", option.axisTitleSize)
         .attr("text-anchor", "middle")
         .attr("class", "axis-label, x-axis");
     }
 
     if (option.yAxisTitle) {
-      const yOrigin: number =
-        this.paddingValue.top + (this.height - this.paddingValue.top - this.paddingValue.bottom) / 2;
+      const yOrigin: number = height / 2;
 
-      const xOrigin: number = option.yAxisTitleDirection === "Up" ? option.axisTitleSize : 0;
+      const xOrigin: number = option.yAxisTitleDirection === "Up" ?
+        option.axisTitleSize - this.paddingValue.left : -this.paddingValue.left;
 
       const rotation: number = option.yAxisTitleDirection === "Up" ? -90 : 90;
 
@@ -192,7 +296,7 @@ export class NgChartComponent implements OnInit {
       .attr("stroke", (d: any, i: number) => this.getString(option.stroke, d, i))
       .attr("stroke-width", option.strokeWidth)
       .attr("fill", "none")
-      .attr("class", "line" + option.class ? " " + option.class : "");
+      .attr("class", "chart-line" + (option.class ? (" " + option.class) : ""));
   }
 
   private appendPieChart(svg: Selection<any, any, null, undefined>, option: ChartOptions): void {

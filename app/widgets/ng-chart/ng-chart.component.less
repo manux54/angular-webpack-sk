@@ -17,3 +17,24 @@
     shape-rendering: crispEdges;
   }
 }
+
+:host @{deep} .grid-lines {
+  text {
+    display: none;
+  }
+
+  line {
+    fill: none;
+    stroke: #888;
+    stroke-opacity: 0.7;
+    shape-rendering: crispEdges;
+  }
+
+  line:nth-child(even) {
+    stroke: #ccc;
+  }
+
+  path {
+    stroke-width: 0;
+  }
+}

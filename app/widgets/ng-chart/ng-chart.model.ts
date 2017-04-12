@@ -20,6 +20,8 @@ class ChartOptions {
   public yAxisTitle: string = null;
   public axisTitleSize: number = 14;
   public yAxisTitleDirection: "Up" | "Down" = "Up";
+  public xAxisGridLines: "major" | "minor" = null;
+  public yAxisGridLines: "major" | "minor" = null;
 
   public constructor(init?: Partial<ChartOptions>) {
     if (init) {
