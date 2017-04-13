@@ -243,12 +243,25 @@ export class NgChartComponent implements OnInit {
         .attr("class", "axis-label y-axis");
     }
 
-    svg.append("path")
-      .attr("d", lineFct(this.dataSet))
-      .attr("stroke", (d: any, i: number) => this.getString(option.stroke, d, i))
-      .attr("stroke-width", option.strokeWidth)
-      .attr("fill", "none")
-      .attr("class", "chart-line" + (option.class ? (" " + option.class) : ""));
+    if (option.stroke) {
+      svg.append("path")
+        .attr("d", lineFct(this.dataSet))
+        .attr("stroke", (d: any, i: number) => this.getString(option.stroke, d, i))
+        .attr("stroke-width", option.strokeWidth)
+        .attr("fill", "none")
+        .attr("class", "chart-line" + (option.class ? (" " + option.class) : ""));
+    }
+
+    if (option.markerSize) {
+      svg.selectAll("circle")
+        .data(this.dataSet)
+        .enter()
+        .append("circle")
+        .attr("cx", (d: any) => xScale(d[option.xAxisProperty]))
+        .attr("cy", (d: any) => yScale(d[option.yAxisProperty]))
+        .attr("r", (d: any, i: number) => this.getNumber(option.markerSize, d, i))
+        .attr("fill", (d: any, i: number) => option.fill ? this.getString(option.fill, d, i) : "black");
+    }
   }
 
   private appendPieChart(svg: Selection<any, any, null, undefined>, option: ChartOptions): void {

@@ -88,6 +88,7 @@ export class ChartsComponent {
 
   public options: ChartOptions = new ChartOptions({
     chartType: "line",
+    markerSize: 5,
     stroke: "blue",
     strokeWidth: 2,
     xAxisGridLines: "minor",
