@@ -72,9 +72,6 @@ export class NgChartComponent implements OnInit {
       case "pie":
         this.appendPieChart(svg, option);
         break;
-      case "scatterPlot":
-        this.appendScatterPlot(svg, option);
-        break;
       default:
         break;
     }
@@ -87,7 +84,7 @@ export class NgChartComponent implements OnInit {
 
     if (option.orientation === "horizontal") {
       const valueScale = scaleLinear()
-        .domain(this.getDomainRange(option.xAxisProperty, true))
+        .domain(this.getDomainRange(true))
         .range([0, width])
         .nice();
 
@@ -103,7 +100,7 @@ export class NgChartComponent implements OnInit {
 
     } else {
       const valueScale = scaleLinear()
-        .domain(this.getDomainRange(option.yAxisProperty, true))
+        .domain(this.getDomainRange(false))
         .range([height, 0])
         .nice();
 
@@ -136,7 +133,7 @@ export class NgChartComponent implements OnInit {
     const height = this.height - this.paddingValue.top - this.paddingValue.bottom;
 
     let xScale = scaleLinear()
-      .domain(this.getDomainRange(option.xAxisProperty))
+      .domain(this.getDomainRange(true))
       .range([0, width]);
 
     if (!option.xAxisTicks) {
@@ -144,7 +141,7 @@ export class NgChartComponent implements OnInit {
     }
 
     let yScale = scaleLinear()
-      .domain(this.getDomainRange(option.yAxisProperty, true))
+      .domain(this.getDomainRange(false))
       .range([height, 0]);
 
     if (!option.yAxisTicks) {
@@ -268,50 +265,33 @@ export class NgChartComponent implements OnInit {
     svg.append("h1").text("Pie Chart");
   }
 
-  private appendScatterPlot(svg: Selection<any, any, null, undefined>, option: ChartOptions): void {
-    const xScale = scaleLinear()
-      .domain(this.getDomainRange(option.xAxisProperty))
-      .range([this.paddingValue.left, this.width - this.paddingValue.right])
-      .nice();
+  private getDomainRange(xAxis: boolean): number[] {
+    let min: number = Number.POSITIVE_INFINITY;
+    let max: number = Number.NEGATIVE_INFINITY;
 
-    const yScale = scaleLinear()
-      .domain(this.getDomainRange(option.yAxisProperty, true))
-      .range([this.height - this.paddingValue.top, this.paddingValue.bottom])
-      .nice();
+    const options: ChartOptions[] = (this.chartOptions instanceof Array) ? this.chartOptions : [this.chartOptions];
 
-    svg.append("g")
-      .call(axisLeft(yScale).ticks(5))
-      .attr("class", "axis y-axis")
-      .attr("transform", `translate(${this.paddingValue.left},0)`);
-
-    svg.append("g")
-      .call(axisBottom(xScale))
-      .attr("class", "axis x-axis")
-      .attr("transform", `translate(0,${this.height - this.paddingValue.bottom})`);
-
-    svg.selectAll("circle")
-      .data(this.dataSet)
-      .enter()
-      .append("circle")
-      .attr("cx", (d: any) => xScale(d[option.xAxisProperty]))
-      .attr("cy", (d: any) => yScale(d[option.yAxisProperty]))
-      .attr("r", (d: any, i: number) => this.getNumber(option.markerSize, d, i))
-      .attr("fill", (d: any, i: number) => this.getString(option.fill, d, i));
-  }
-
-  private getDomainRange(property: string, zeroRange: boolean = false): number[] {
-    let min: number = zeroRange ? 0 : Number.POSITIVE_INFINITY;
-    let max: number = zeroRange ? 0 : Number.NEGATIVE_INFINITY;
-
-    this.dataSet.forEach((val: any) => {
-      if (val[property] < min) {
-        min = val[property];
+    options.forEach((option: ChartOptions) => {
+      if ((xAxis && option.xAxisDomain) || (!xAxis && option.yAxisDomain)) {
+        return option.xAxisDomain;
+      } else if ((xAxis && option.xAxisIncludesZero) || (!xAxis && option.yAxisIncludesZero)) {
+        min = Math.min(min, 0);
+        max = Math.max(max, 0);
       }
 
-      if (val[property] > max) {
-        max = val[property];
-      }
+      let property: string = xAxis ? option.xAxisProperty : option.yAxisProperty;
+
+      this.dataSet.forEach((val: any) => {
+        if (val[property] < min) {
+          min = val[property];
+        }
+
+        if (val[property] > max) {
+          max = val[property];
+        }
+      });
     });
+
     return [min, max];
   }
 

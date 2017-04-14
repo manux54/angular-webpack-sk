@@ -115,12 +115,4 @@ export class ChartsComponent {
     xAxisProperty: "month",
     yAxisProperty: "sales",
   });
-
-  public options3: ChartOptions = new ChartOptions({
-    chartType: "scatterPlot",
-    fill: "purple",
-    markerSize: 5,
-    xAxisProperty: "month",
-    yAxisProperty: "sales",
-  });
 }
