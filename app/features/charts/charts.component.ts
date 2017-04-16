@@ -1,5 +1,5 @@
 import { Component, ViewEncapsulation } from "@angular/core";
-import { ChartOptions } from "../../widgets/ng-chart";
+import { AxisOptions, ChartOptions } from "../../widgets/ng-chart";
 
 @Component({
   styleUrls: ["./charts.component.less"],
@@ -35,7 +35,9 @@ export class ChartsComponent {
     fill: (d: any, i: number) => `rgb(${d.age * 5},0,0)`,
     orientation: "vertical",
     padding: 2,
+    xAxis: "hidden-x",
     xAxisProperty: "name",
+    yAxis: "hidden-y",
     yAxisProperty: "age",
   });
 
@@ -91,14 +93,23 @@ export class ChartsComponent {
     markerSize: 5,
     stroke: "blue",
     strokeWidth: 2,
-    xAxisGridLines: "minor",
+    xAxis: "bottom",
     xAxisProperty: "month",
-    xAxisTitle: "Months",
-    yAxisGridLines: "minor",
+    yAxis: "left",
     yAxisProperty: "sales",
-    yAxisTicks: 5,
-    yAxisTitle: "Sales",
   });
+
+  public axes: {[axis: string]: AxisOptions} = {
+    bottom: new AxisOptions({
+      gridLines: "minor",
+      title: "Months",
+    }),
+    left: new AxisOptions({
+      gridLines: "minor",
+      ticks: 5,
+      title: "Sales",
+    }),
+  };
 
   public lineChartPadding = {
     bottom: 34,

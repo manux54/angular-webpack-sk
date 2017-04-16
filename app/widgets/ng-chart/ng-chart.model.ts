@@ -13,21 +13,12 @@ class ChartOptions {
   // x-axis configs. Defaults to x property of dataset, defaults d3 ticks, no axis title, no grid lines,
   // automatic domain and force 0 inside domain range
   public xAxisProperty: string = "x";
-  public xAxisTicks: number = null;
-  public xAxisTitle: string = null;
-  public xAxisGridLines: "major" | "minor" | null = null;
-  public xAxisDomain: number[] = null;
-  public xAxisIncludesZero: boolean = true;
+  public xAxis: "bottom" | "hidden-x" | "top" = "hidden-x";
 
   // y-axis configs. Defaults to y property of dataset, defaults d3 ticks, no axis title, no grid lines
   // automatic domain and force 0 inside domain range
   public yAxisProperty: string = "y";
-  public yAxisTicks: number = null;
-  public yAxisTitle: string = null;
-  public yAxisGridLines: "major" | "minor" = null;
-  public yAxisTitleDirection: "Up" | "Down" = "Up";
-  public yAxisDomain: number[] = null;
-  public yAxisIncludesZero: boolean = true;
+  public yAxis: "left" | "hidden-y" | "right" = "hidden-y";
 
   // bar chart config: default to vertical bars
   public orientation: "horizontal" | "vertical" = "vertical";
