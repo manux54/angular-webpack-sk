@@ -89,7 +89,7 @@ export class NotificationsComponent {
         this.notifications.forEach((val: Notification) => val.hasBeenRead());
         break;
       case "active":
-          this.pendingNotifications = [];
+        this.pendingNotifications = [];
         break;
       default:
         break;
@@ -113,7 +113,7 @@ export class NotificationsComponent {
       this.snackbarShowing = true;
       const notification: Notification = this.pendingNotifications.pop();
 
-      let ref = this.snackbar.open(notification.text, notification.route ? "Open" : null, {duration: 3000});
+      const ref = this.snackbar.open(notification.text, notification.route ? "Open" : null, {duration: 3000});
       ref.onAction().subscribe(() => this.router.navigate([notification.route]));
       ref.afterDismissed().subscribe(() => this.showPendingSnackbar());
     } else {

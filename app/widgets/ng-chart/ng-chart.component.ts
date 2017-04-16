@@ -97,7 +97,7 @@ export class NgChartComponent implements OnInit {
     const xAxis: boolean = axis === "bottom" || axis === "top" || axis === "hidden-x";
     const range: number[] = xAxis ? [0, width] : [height, 0];
 
-    let scale: ScaleLinear<number, number> = scaleLinear()
+    const scale: ScaleLinear<number, number> = scaleLinear()
       .domain(domain)
       .range(range)
       .nice(options.ticks);
@@ -320,12 +320,12 @@ export class NgChartComponent implements OnInit {
           x = options.titleDirection === "Up" ? options.titleSize - this.paddingValue.left : -this.paddingValue.left;
           y = height / 2;
           rotation = options.titleDirection === "Up" ? -90 : 90;
-        break;
+          break;
         case "right":
           x = width - this.paddingValue.right;
           y = height / 2;
           rotation = options.titleDirection === "Up" ? -90 : 90;
-        break;
+          break;
         case "top":
           x = width / 2;
           y = this.paddingValue.top;
@@ -337,7 +337,7 @@ export class NgChartComponent implements OnInit {
           break;
       }
 
-      let axisLabel = svg.append("text")
+      const axisLabel = svg.append("text")
           .text(options.title)
           .attr("font-size", options.titleSize)
           .attr("text-anchor", "middle")

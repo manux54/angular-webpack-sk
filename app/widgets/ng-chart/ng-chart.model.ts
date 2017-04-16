@@ -43,7 +43,7 @@ class ChartOptions {
       Object.assign(this, init);
     }
   }
-};
+}
 
 export {
   ChartOptions,
