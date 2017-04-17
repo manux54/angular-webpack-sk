@@ -255,7 +255,7 @@ export class NgChartComponent implements OnInit {
         break;
       case "right":
         axisInstance = axisRight(scale);
-        transform = `translate(0,${width})`;
+        transform = `translate(${width},0)`;
         break;
       case "top":
         axisInstance = axisTop(scale);
@@ -269,7 +269,7 @@ export class NgChartComponent implements OnInit {
     axisInstance = axisInstance.ticks(options.ticks);
 
     // TODO : Move formating to configuration options
-    if (axis === "left") {
+    if (axis === "left" || axis === "right") {
       axisInstance = axisInstance.tickFormat(formatPrefix(",.0", 1e3));
     }
 
@@ -328,7 +328,7 @@ export class NgChartComponent implements OnInit {
           break;
         case "top":
           x = width / 2;
-          y = this.paddingValue.top;
+          y = options.titleSize - this.paddingValue.top;
           break;
         case "bottom":
         default:
@@ -368,17 +368,19 @@ export class NgChartComponent implements OnInit {
       .x((d: any) => xScale(d[option.xAxisProperty]))
       .y((d: any) => yScale(d[option.yAxisProperty]));
 
+    const svgChart = svg.append("g")
+        .attr("class", "chart-line" + (option.class ? (" " + option.class) : ""));
+
     if (option.stroke) {
-      svg.append("path")
+      svgChart.append("path")
         .attr("d", lineFct(this.dataSet))
         .attr("stroke", (d: any, i: number) => this.getString(option.stroke, d, i))
         .attr("stroke-width", option.strokeWidth)
-        .attr("fill", "none")
-        .attr("class", "chart-line" + (option.class ? (" " + option.class) : ""));
+        .attr("fill", "none");
     }
 
     if (option.markerSize) {
-      svg.selectAll("circle")
+      svgChart.selectAll("circle")
         .data(this.dataSet)
         .enter()
         .append("circle")
